@@ -114,6 +114,7 @@ function add_classe_objeto(N) {
         let ultimo = dmx.length - 1;
         dmx[ultimo].obj = document.createElement('div');
         dmx[ultimo].obj.classList.add("arrastavel");
+        dmx[ultimo].obj.classList.add("azul");
         dmx[ultimo].endereco = endereco_local;
         dmx[ultimo].obj.innerText = `DMX ${dmx[ultimo].endereco}.${dmx[ultimo].canais}`;
         endereco_local = endereco_local + dmx[ultimo].canais;
