@@ -115,6 +115,7 @@ function MouseUp(){
     isDragging = false;
     document.body.style.userSelect = ''; // Restaura a seleção de texto
     slider_isDragging = false;
+    status_out("mouse up"); 
 }
 
 function add_classe_objeto(N) {
@@ -136,9 +137,9 @@ function add_classe_objeto(N) {
         dmx[ultimo].obj.style.zIndex = ultimo;
         dmx[ultimo].obj.dataset.info = ultimo;
         dmx[ultimo].obj.addEventListener('mousedown',dragFunction);
-        dmx[ultimo].obj.addEventListener('touchmove', converterTouchMoveToMousemove, false);
-        dmx[ultimo].obj.addEventListener('touchend', converterTouchEndToMouseup, false);
-        dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouse, false);
+        //dmx[ultimo].obj.addEventListener('touchmove', converterTouchMoveToMousemove);
+        //dmx[ultimo].obj.addEventListener('touchend', converterTouchEndToMouseup);
+        dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouseDown);
 
       /*  dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouse, false);
         dmx[ultimo].obj.addEventListener('touchmove', converterTouchToMouse, false);

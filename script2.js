@@ -68,6 +68,7 @@ function converterTouchMoveToMousemove(event) {
 
     //const touch = event.changedTouches[0];
     //console.log(event.type);
+    //touch = Array.from(event.touches[0]).find(t => t.identifier === activeTouchId);
     touch = event.changedTouches[0];
     // Cria um evento de mouse com base nas informações do toque
     const mouseEvent = new MouseEvent("mousemove", {
@@ -106,7 +107,7 @@ function converterTouchEndToMouseup(event) {
     //if(event.type == "touchend")event.type = "mouseup";
     //if(event.type == "touchmove")event.type = "mousemove";
     // Cria um evento de mouse com base nas informações do toque
-    touch = event.changedTouches[0];
+    //touch = event.changedTouches[0];
     const mouseEvent = new MouseEvent("mouseup", {
       bubbles: true,  // Propagar para os pais
       cancelable: true, // O evento pode ser cancelado
