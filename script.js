@@ -1,3 +1,5 @@
+/* Script with function to setup html enviroment*/
+
 class Objetos_DMX{
     constructor (canais = 8, endereco = 1){
         this.canais = canais;
@@ -46,12 +48,10 @@ const meu_status = document.getElementById("status");
 let offsetX, offsetY, isDragging = false;
 let slider_offsetX, slider_offsetY, slider_isDragging = false;
 
-var activeTouchId = null;
-
 document.addEventListener('mousemove', MouseMove);
 document.addEventListener('mouseup', MouseUp);
-document.addEventListener('touchmove', converterTouchMoveToMousemove, false);
-document.addEventListener('touchend', converterTouchEndToMouseup, false);
+document.addEventListener('touchmove', converterTouchMoveToMousemove);
+document.addEventListener('touchend', converterTouchEndToMouseup);
 
 add_classe_objeto(NumeroObjetos);
 add_meu_slider();
@@ -247,7 +247,7 @@ function add_meu_slider(){
         div_botao_slider.classList.add("meu_slider_botao");
         div_botao_slider.id = "meu_slider" + index;
         div_botao_slider.addEventListener("mousedown", dragSlider);
-        div_botao_slider.addEventListener('touchstart', converterTouchToMouse, false);
+        div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
         //document.addEventListener('touchend', converterTouchEndToMouseup, false);
         //
@@ -305,111 +305,3 @@ function set_value_meu_slider(local_slider, valor){
 function mapValue(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
-function converterTouchToMouse(event) {
-    // Obtém as informações do toque (coordenadas do toque)
-    event.preventDefault();
-    event.stopPropagation();
-    
-    if (activeTouchId === null) {
-        // Salva o ID do primeiro toque
-        activeTouchId = event.touches[0].identifier;
-        meu_status.innerText = "Primeiro toque detectado: x-" + event.touches[0].clientX + " y-" + event.touches[0].clientY;
-    } else {
-        // Ignora toques adicionais
-        meu_status.innerText = "Toque adicional ignorado";
-        return;
-    }
-    
-    const touch = event.changedTouches[0];
-    //console.log(event.type);
-    //meu_status.innerText = event.type;
-    //if(event.type == "touchstart")meu_status.innerText = "mousedown";
-    //event.type = "mousedown";
-    //if(event.type == "touchend")event.type = "mouseup";
-    //if(event.type == "touchmove")event.type = "mousemove";
-    // Cria um evento de mouse com base nas informações do toque
-    const mouseEvent = new MouseEvent("mousedown", {
-      bubbles: true,  // Propagar para os pais
-      cancelable: true, // O evento pode ser cancelado
-      view: window,  // A janela do navegador
-      clientX: touch.clientX,  // Posição X do toque
-      clientY: touch.clientY,  // Posição Y do toque
-      screenX: touch.screenX,  // Posição na tela
-      screenY: touch.screenY   // Posição na tela
-    });
-  
-    // Dispara o evento de mouse no mesmo alvo do evento de toque
-    touch.target.dispatchEvent(mouseEvent);
-  }
-  
-  // Adiciona o ouvinte de eventos para touchstart
-  function converterTouchMoveToMousemove(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    if (activeTouchId !== null) {
-        // Verifica se o movimento pertence ao toque inicial
-        const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
-        if (touch) {
-          meu_status.innerText = "Movimento do primeiro toque:" + touch.clientX + "y-" + touch.clientY;
-        } else {
-          meu_status.innerText = "Movimento ignorado";
-          return;
-        }
-    } else {
-        return;
-    }
-
-    //const touch = event.changedTouches[0];
-    //console.log(event.type);
-    
-    // Cria um evento de mouse com base nas informações do toque
-    const mouseEvent = new MouseEvent("mousemove", {
-      bubbles: true,  // Propagar para os pais
-      cancelable: true, // O evento pode ser cancelado
-      view: window,  // A janela do navegador
-      clientX: touch.clientX,  // Posição X do toque
-      clientY: touch.clientY,  // Posição Y do toque
-      screenX: touch.screenX,  // Posição na tela
-      screenY: touch.screenY   // Posição na tela
-    });
-  
-    // Dispara o evento de mouse no mesmo alvo do evento de toque
-    touch.target.dispatchEvent(mouseEvent);    
-  }
-
-  function converterTouchEndToMouseup(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const touch = Array.from(event.changedTouches).find(t => t.identifier === activeTouchId);
-    if (touch) {
-        meu_status.innerText = "Primeiro toque terminou:";
-        activeTouchId = null; // Reseta para permitir novos toques
-    } else {
-        return;
-    }
-
-    //const touch = event.changedTouches[0];
-    //console.log(event.type);
-    //touchactive = false;
-    //meu_status.innerText = event.type;
-    //if(event.type == "touchstart")meu_status.innerText = "mousedown";
-    //event.type = "mousedown";
-    //if(event.type == "touchend")event.type = "mouseup";
-    //if(event.type == "touchmove")event.type = "mousemove";
-    // Cria um evento de mouse com base nas informações do toque
-    const mouseEvent = new MouseEvent("mouseup", {
-      bubbles: true,  // Propagar para os pais
-      cancelable: true, // O evento pode ser cancelado
-      view: window,  // A janela do navegador
-      clientX: touch.clientX,  // Posição X do toque
-      clientY: touch.clientY,  // Posição Y do toque
-      screenX: touch.screenX,  // Posição na tela
-      screenY: touch.screenY   // Posição na tela
-    });
-  
-    // Dispara o evento de mouse no mesmo alvo do evento de toque
-    touch.target.dispatchEvent(mouseEvent);  
-  }
