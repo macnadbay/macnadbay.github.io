@@ -10,13 +10,20 @@
     touch-action: none;  /* Desabilita gestos de navegação padrão como rolar e zoom 
 }*/
   
+body{
+}
 
 .fundo{
  border-bottom: solid 2px black;
  background-color:gainsboro;
  border-radius: 0%;
  padding: 10px;
- height: 100vh;
+ position: absolute;
+ top: 0;
+ left: 0;
+ height: 100%;
+ flex: 1;
+ min-height: 100%;
  width: calc(100%);
  display: flex;
 }
