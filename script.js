@@ -35,6 +35,7 @@ class Objetos_DMX{
 // Referência ao elemento que será arrastado
 var objetos = [];
 var dmx = [];
+var selecao = [];
 
 const NumeroObjetos = 6;
 var objeto;
@@ -78,10 +79,11 @@ function dragFunction(event) {
         }
     });
     objeto.style.zIndex = dmx.length-1;
+    //selecao.
     //objeto.innerHTML = objeto.style.zIndex;
     //console.log(objeto.dataset.info);
     //event.preventDefault();
-    meu_status.innerText = "Mouse Down"
+    meu_status("Mouse Down");  
 };
 
 // Quando o usuário move o mouse
@@ -89,9 +91,9 @@ function MouseMove(event) {
     if (isDragging) {
         // Atualiza a posição do elemento com base na posição do mouse
         //caixa.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth-caixa.offsetWidth) + 'px';
-        objeto.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth -objeto.offsetWidth) + 'px';
+        objeto.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth -objeto.offsetWidth) + window.scrollX + 'px';
         //caixa.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - caixa.offsetHeight) + 'px';
-        objeto.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - objeto.offsetHeight - div_comandos.offsetHeight) + 'px';
+        objeto.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - objeto.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
     }
     if (slider_isDragging) {
         // Atualiza a posição do elemento com base na posição do mouse

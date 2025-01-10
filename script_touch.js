@@ -6,7 +6,7 @@ var meu_status_new;
 function status_out(texto){
     meu_status_old = meu_status_new;
     meu_status_new = texto;
-    meu_status.innerText = "old: " + meu_status_old + " new: " + meu_status_new;
+    meu_status.innerText = "OLD " + meu_status_old + "\n NEW: " + meu_status_new;
 }
 
 function converterTouchToMouseDown(event) {
@@ -53,9 +53,10 @@ function converterTouchMoveToMousemove(event) {
     event.preventDefault();
     event.stopPropagation();
     
+    const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
+
     if (activeTouchId !== null) {
         // Verifica se o movimento pertence ao toque inicial
-        const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
         if (touch) {
         status_out("Movimento do primeiro toque:" + touch.clientX + "y-" + touch.clientY);
         } else {
@@ -69,7 +70,7 @@ function converterTouchMoveToMousemove(event) {
     //const touch = event.changedTouches[0];
     //console.log(event.type);
     //touch = Array.from(event.touches[0]).find(t => t.identifier === activeTouchId);
-    touch = event.changedTouches[0];
+    //touch = event.changedTouches[0];
     // Cria um evento de mouse com base nas informações do toque
     const mouseEvent = new MouseEvent("mousemove", {
       bubbles: true,  // Propagar para os pais
