@@ -44,6 +44,7 @@ var slider_objeto;
 const fundo = document.getElementById("fundo");
 const div_comandos = document.getElementById("comando");
 const meu_status = document.getElementById("status");
+const objetos_selecionados = [];
 
 // Variáveis para armazenar a posição inicial do mouse
 let offsetX, offsetY, isDragging = false;
@@ -51,6 +52,7 @@ let slider_offsetX, slider_offsetY, slider_isDragging = false;
 
 document.addEventListener('mousemove', MouseMove);
 document.addEventListener('mouseup', MouseUp);
+document.addEventListener('mousedown', MouseDown);
 document.addEventListener('touchmove', converterTouchMoveToMousemove);
 document.addEventListener('touchend', converterTouchEndToMouseup);
 
@@ -62,6 +64,9 @@ function dragFunction(event) {
     // Evitar que o arrasto aconteça se o clique for em qualquer coisa que não a área do arrasto
     isDragging = true;
     objeto = this;
+
+    event.preventDefault();
+    event.stopPropagation();
     // Calcula a diferença entre a posição do mouse e a posição do elemento
     offsetX = event.clientX - this.getBoundingClientRect().left;
     offsetY = event.clientY - this.getBoundingClientRect().top;
@@ -82,18 +87,69 @@ function dragFunction(event) {
     //selecao.
     //objeto.innerHTML = objeto.style.zIndex;
     //console.log(objeto.dataset.info);
-    //event.preventDefault();
-    meu_status("Mouse Down");  
+    //meu_status("Mouse Down"); 
+    if (event.shiftKey) {
+        if(objeto.classList.contains("selecionado")){
+            objeto.classList.remove("selecionado");
+            const index = objetos_selecionados.indexOf(objeto);
+            if (index > -1) {
+                objetos_selecionados.splice(index, 1);
+            }
+        } else {
+            objeto.classList.add("selecionado");
+            objetos_selecionados.push(objeto);
+        }
+        objetos_selecionados.forEach(objSel => {
+            objSel.dataset.offsetX = event.clientX - objSel.getBoundingClientRect().left;
+            objSel.dataset.offsetY = event.clientY - objSel.getBoundingClientRect().top;
+        })
+    } else {
+        objetos_selecionados.forEach((objSel, index) => {
+            objSel.classList.remove("selecionado");
+        })
+        objetos_selecionados.length = 0;
+        objeto.classList.add("selecionado");
+        objetos_selecionados.push(objeto);
+        objetos_selecionados.forEach(objSel => {
+            objSel.dataset.offsetX = event.clientX - objSel.getBoundingClientRect().left;
+            objSel.dataset.offsetY = event.clientY - objSel.getBoundingClientRect().top;
+        })
+    }
+    //console.log(objetos_selecionados.map(div => div.dataset.id));
 };
 
 // Quando o usuário move o mouse
+function MouseDown(event){
+    document.body.style.userSelect = 'none';
+    event.preventDefault();
+    event.stopPropagation(); 
+    if (event.shiftKey) {
+        
+    } else {
+        objetos_selecionados.forEach((objSel, index) => {
+            objSel.classList.remove("selecionado");
+        })
+        objetos_selecionados.length = 0;
+    }
+}
+
+// Quando o usuário move o mouse
 function MouseMove(event) {
+    document.body.style.userSelect = 'none';
+    event.preventDefault();
+    event.stopPropagation();
     if (isDragging) {
         // Atualiza a posição do elemento com base na posição do mouse
         //caixa.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth-caixa.offsetWidth) + 'px';
-        objeto.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth -objeto.offsetWidth) + window.scrollX + 'px';
+        //objeto.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth -objeto.offsetWidth) + window.scrollX + 'px';
         //caixa.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - caixa.offsetHeight) + 'px';
-        objeto.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - objeto.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
+        //objeto.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - objeto.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
+        objetos_selecionados.forEach(objsel=>{
+            objsel.style.top = Math.min(Math.max(0,event.clientY - objsel.dataset.offsetY), window.innerHeight - objsel.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
+            objsel.style.left = Math.min(Math.max(0,event.clientX - objsel.dataset.offsetX), window.innerWidth -objsel.offsetWidth) + window.scrollX + 'px';
+            //console.log(objsel.style.top);
+            //console.log(objsel.dataset.id + " - " + objsel.style.top);
+        });
     }
     if (slider_isDragging) {
         // Atualiza a posição do elemento com base na posição do mouse
@@ -106,8 +162,12 @@ function MouseMove(event) {
         //console.log(slider_objeto.style.top);
         //console.log(min);
         //console.log(max);
-        let slider_value = 100*(1 -(slider_objeto.offsetTop - pai.offsetTop)/(pai.offsetHeight-slider_objeto.getBoundingClientRect().height));
+        console.log(slider_objeto.dataset.id);
+        let slider_value = 255*(1 -(slider_objeto.offsetTop - pai.offsetTop)/(pai.offsetHeight-slider_objeto.getBoundingClientRect().height));
         slider_objeto.innerHTML = Math.round(slider_value);
+        objetos_selecionados.forEach(objsel =>{
+            //objsel.style.backgroundColor = rgb();
+        })
         //console.log(slider_value);
     }
 }
@@ -115,9 +175,9 @@ function MouseMove(event) {
 // Quando o usuário solta o botão do mouse
 function MouseUp(){
     isDragging = false;
-    document.body.style.userSelect = ''; // Restaura a seleção de texto
+    //document.body.style.userSelect = ''; // Restaura a seleção de texto
     slider_isDragging = false;
-    status_out("mouse up"); 
+    //status_out("mouse up"); 
 }
 
 function add_classe_objeto(N) {
@@ -130,14 +190,23 @@ function add_classe_objeto(N) {
         let ultimo = dmx.length - 1;
         dmx[ultimo].obj = document.createElement('div');
         dmx[ultimo].obj.classList.add("arrastavel");
-        dmx[ultimo].obj.classList.add("azul");
+        //dmx[ultimo].obj.classList.add("azul");
+        dmx[ultimo].intensidade = Math.round(Math.random()*255);
+        dmx[ultimo].vermelho = Math.round(Math.random()*255);
+        dmx[ultimo].verde = Math.round(Math.random()*255);
+        dmx[ultimo].azul = Math.round(Math.random()*255);
+        dmx[ultimo].branco = Math.round(Math.random()*255);
+        dmx[ultimo].amarelo = Math.round(Math.random()*255);
+        dmx[ultimo].efeitos = 0;
+
+        
         dmx[ultimo].endereco = endereco_local;
         dmx[ultimo].obj.innerText = `DMX ${dmx[ultimo].endereco}.${dmx[ultimo].canais}`;
         endereco_local = endereco_local + dmx[ultimo].canais;
         dmx[ultimo].obj.style.left = 100*i+"px";
         //dmx[ultimo].obj.style.top = "300px";
         dmx[ultimo].obj.style.zIndex = ultimo;
-        dmx[ultimo].obj.dataset.info = ultimo;
+        dmx[ultimo].obj.dataset.id = ultimo;
         dmx[ultimo].obj.addEventListener('mousedown',dragFunction);
         //dmx[ultimo].obj.addEventListener('touchmove', converterTouchMoveToMousemove);
         //dmx[ultimo].obj.addEventListener('touchend', converterTouchEndToMouseup);
@@ -249,6 +318,7 @@ function add_meu_slider(){
         let div_botao_slider = document.createElement("div");
         div_botao_slider.classList.add("meu_slider_botao");
         div_botao_slider.id = "meu_slider" + index;
+        div_botao_slider.dataset.id = comando;
         div_botao_slider.addEventListener("mousedown", dragSlider);
         div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
@@ -275,7 +345,6 @@ function add_meu_slider(){
         div.appendChild(div_inferior);
         div_comandos.appendChild(div);
         set_value_meu_slider(index, 100*Math.random());
-
     })
 }
 
@@ -287,8 +356,8 @@ function dragSlider(event){
     slider_offsetX = 0; //event.clientX - this.getBoundingClientRect().left;
     slider_offsetY = event.clientY - this.offsetTop;
     // Desabilitar seleção de texto enquanto arrasta (para uma melhor experiência)
-    document.body.style.userSelect = 'none';
-    slider_objeto.style.userSelect = "none";
+    //document.body.style.userSelect = 'none';
+    //slider_objeto.style.userSelect = "none";
     //slider_objeto.style.backgroundColor = "rgb(255,0,0)";
     //event.preventDefault();
     //meu_status.innerText = "mouse down slider";
@@ -297,7 +366,7 @@ function dragSlider(event){
 function set_value_meu_slider(local_slider, valor){
     let l_slider = document.getElementById("meu_slider"+local_slider);
     if(l_slider){
-        l_slider.style.top = mapValue(valor, 100, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
+        l_slider.style.top = mapValue(valor, 255, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
         //console.log(l_slider.parentNode.offsetHeight);
         l_slider.innerHTML = Math.round(valor);
     } else {
@@ -307,4 +376,13 @@ function set_value_meu_slider(local_slider, valor){
 
 function mapValue(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function RGBWYtoRGB(R, G, B, W, Y){
+    let normalR = R + G + B || 1;
+    const red = Math.min(255, R + Y/2 + W*(R/normalR));
+    const green = Math.min(255, G + Y/2 + W*(G/normalR));
+    const blue = Math.min(255, B + W*(B/normalR));
+    
+    return {red, green, blue};
 }
