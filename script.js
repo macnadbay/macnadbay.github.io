@@ -60,125 +60,7 @@ add_classe_objeto(NumeroObjetos);
 add_meu_slider();
 
 // Quando o usuário começa a arrastar (pressiona o botão do mouse)
-function dragFunction(event) {
-    // Evitar que o arrasto aconteça se o clique for em qualquer coisa que não a área do arrasto
-    isDragging = true;
-    objeto = this;
 
-    event.preventDefault();
-    event.stopPropagation();
-    // Calcula a diferença entre a posição do mouse e a posição do elemento
-    offsetX = event.clientX - this.getBoundingClientRect().left;
-    offsetY = event.clientY - this.getBoundingClientRect().top;
-
-    // Desabilitar seleção de texto enquanto arrasta (para uma melhor experiência)
-    document.body.style.userSelect = 'none';
-
-    //melhorar a experiencia ao selecionar um objeto para o topo
-    dmx.forEach(dmx_local=>{
-        if(dmx_local.obj.style.zIndex > objeto.style.zIndex){
-            //max = dmx_local.obj.style.zIndex;
-            dmx_local.obj.style.zIndex--;
-            //dmx_local.obj.innerHTML = dmx_local.obj.style.zIndex;
-            
-        }
-    });
-    objeto.style.zIndex = dmx.length-1;
-    //selecao.
-    //objeto.innerHTML = objeto.style.zIndex;
-    //console.log(objeto.dataset.info);
-    //meu_status("Mouse Down"); 
-    if (event.shiftKey) {
-        if(objeto.classList.contains("selecionado")){
-            objeto.classList.remove("selecionado");
-            const index = objetos_selecionados.indexOf(objeto);
-            if (index > -1) {
-                objetos_selecionados.splice(index, 1);
-            }
-        } else {
-            objeto.classList.add("selecionado");
-            objetos_selecionados.push(objeto);
-        }
-        objetos_selecionados.forEach(objSel => {
-            objSel.dataset.offsetX = event.clientX - objSel.getBoundingClientRect().left;
-            objSel.dataset.offsetY = event.clientY - objSel.getBoundingClientRect().top;
-        })
-    } else {
-        objetos_selecionados.forEach((objSel, index) => {
-            objSel.classList.remove("selecionado");
-        })
-        objetos_selecionados.length = 0;
-        objeto.classList.add("selecionado");
-        objetos_selecionados.push(objeto);
-        objetos_selecionados.forEach(objSel => {
-            objSel.dataset.offsetX = event.clientX - objSel.getBoundingClientRect().left;
-            objSel.dataset.offsetY = event.clientY - objSel.getBoundingClientRect().top;
-        })
-    }
-    //console.log(objetos_selecionados.map(div => div.dataset.id));
-};
-
-// Quando o usuário move o mouse
-function MouseDown(event){
-    document.body.style.userSelect = 'none';
-    event.preventDefault();
-    event.stopPropagation(); 
-    if (event.shiftKey) {
-        
-    } else {
-        objetos_selecionados.forEach((objSel, index) => {
-            objSel.classList.remove("selecionado");
-        })
-        objetos_selecionados.length = 0;
-    }
-}
-
-// Quando o usuário move o mouse
-function MouseMove(event) {
-    document.body.style.userSelect = 'none';
-    event.preventDefault();
-    event.stopPropagation();
-    if (isDragging) {
-        // Atualiza a posição do elemento com base na posição do mouse
-        //caixa.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth-caixa.offsetWidth) + 'px';
-        //objeto.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth -objeto.offsetWidth) + window.scrollX + 'px';
-        //caixa.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - caixa.offsetHeight) + 'px';
-        //objeto.style.top = Math.min(Math.max(0,event.clientY - offsetY), window.innerHeight - objeto.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
-        objetos_selecionados.forEach(objsel=>{
-            objsel.style.top = Math.min(Math.max(0,event.clientY - objsel.dataset.offsetY), window.innerHeight - objsel.offsetHeight - div_comandos.offsetHeight) + window.scrollY + 'px';
-            objsel.style.left = Math.min(Math.max(0,event.clientX - objsel.dataset.offsetX), window.innerWidth -objsel.offsetWidth) + window.scrollX + 'px';
-            //console.log(objsel.style.top);
-            //console.log(objsel.dataset.id + " - " + objsel.style.top);
-        });
-    }
-    if (slider_isDragging) {
-        // Atualiza a posição do elemento com base na posição do mouse
-        //slider_objeto.style.left = 0; //event.clientX - slider_offsetX + 'px';
-        let pai = slider_objeto.parentNode;
-        let min = pai.offsetTop;//+//slider_objeto.getBoundingClientRect().height/2;
-        let max = pai.offsetHeight+pai.offsetTop-slider_objeto.offsetHeight;
-        //console.log(event.clientY - slider_offsetY);
-        slider_objeto.style.top = Math.min(max, Math.max(min, event.clientY - slider_offsetY) )+ 'px';
-        //console.log(slider_objeto.style.top);
-        //console.log(min);
-        //console.log(max);
-        console.log(slider_objeto.dataset.id);
-        let slider_value = 255*(1 -(slider_objeto.offsetTop - pai.offsetTop)/(pai.offsetHeight-slider_objeto.getBoundingClientRect().height));
-        slider_objeto.innerHTML = Math.round(slider_value);
-        objetos_selecionados.forEach(objsel =>{
-            //objsel.style.backgroundColor = rgb();
-        })
-        //console.log(slider_value);
-    }
-}
-
-// Quando o usuário solta o botão do mouse
-function MouseUp(){
-    isDragging = false;
-    //document.body.style.userSelect = ''; // Restaura a seleção de texto
-    slider_isDragging = false;
-    //status_out("mouse up"); 
-}
 
 function add_classe_objeto(N) {
     //const container = document.getElementById('container');
@@ -259,6 +141,10 @@ function add_classe_objeto(N) {
     })
 }*/
 
+function increment_slider(event){
+    objeto = this;
+    console.log("slide " + objeto.dataset.id);
+}
 
 function add_meu_slider(){
     const comandos = ["LIGHT", "RED","GREEN","BLUE","WHITE","YELLOW","COLORS"];
@@ -271,9 +157,17 @@ function add_meu_slider(){
 
         let div_superior = document.createElement("div");
         div_superior.classList.add("meu_slider_mais");
+        div_superior.dataset.id = index;
+        
+        
         let div_superior_conteudo = document.createElement("div");
         div_superior_conteudo.classList.add("meu_slider_mais_conteudo");
         div_superior_conteudo.innerHTML = "+";
+        div_superior_conteudo.dataset.id = index;
+
+
+        div_superior_conteudo.addEventListener("mousedown", increment_slider);
+        
         div_superior.appendChild(div_superior_conteudo);
         
 
@@ -319,6 +213,7 @@ function add_meu_slider(){
         div_botao_slider.classList.add("meu_slider_botao");
         div_botao_slider.id = "meu_slider" + index;
         div_botao_slider.dataset.id = comando;
+        div_botao_slider.dataset.index = index;
         div_botao_slider.addEventListener("mousedown", dragSlider);
         div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
@@ -344,7 +239,8 @@ function add_meu_slider(){
         div.appendChild(div_centro);
         div.appendChild(div_inferior);
         div_comandos.appendChild(div);
-        set_value_meu_slider(index, 100*Math.random());
+        //set_posicao_meu_slider(index, 100*Math.random());
+        set_posicao_value_meu_slider(index, 255*Math.random());
     })
 }
 
@@ -363,12 +259,66 @@ function dragSlider(event){
     //meu_status.innerText = "mouse down slider";
 }
 
-function set_value_meu_slider(local_slider, valor){
+function set_posicao_value_meu_slider(local_slider,valor){
     let l_slider = document.getElementById("meu_slider"+local_slider);
     if(l_slider){
-        l_slider.style.top = mapValue(valor, 255, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
+        l_slider.innerText = parseInt(valor);
+        valor = mapValue(valor, 0, 255, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, l_slider.parentElement.offsetTop);
+        l_slider.style.top = valor + "px";
+    } else {
+        console.log("set_posicao_value_meu_slider: Slider não encontrado")
+    }
+}
+
+function set_posicao_meu_slider(local_slider, valor){
+    let l_slider = document.getElementById("meu_slider"+local_slider);
+    if(l_slider){
+        l_slider.style.top = valor + "px"; //mapValue(valor, 255, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
         //console.log(l_slider.parentNode.offsetHeight);
+        set_value_posicao_meu_slider(local_slider, valor);
+        //l_slider.innerHTML = Math.round(valor);
+    } else {
+        console.log("Slider não encontrado")
+    }
+}
+
+function set_value_posicao_meu_slider(local_slider, valor){
+    let l_slider = document.getElementById("meu_slider"+local_slider);
+    if(l_slider){
+        //console.log("valor: "+ valor);
+        valor = mapValue(valor, l_slider.parentElement.offsetTop, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, 255, 0);
+        //console.log((l_slider.parentElement.offsetTop));
         l_slider.innerHTML = Math.round(valor);
+        objetos_selecionados.forEach(obj=>{
+            switch (local_slider) {
+                case "0":
+                    obj.intensidade = valor;
+                    break;
+                case "1":
+                    obj.canal_vermelho = valor;
+                    break;
+                case "2":
+                    obj.canal_verde = valor;
+                    break;
+                case "3":
+                    obj.canal_azul = valor
+                    break;
+                case "4":
+                    obj.canal_branco = valor;
+                    break;
+                case "5":
+                    obj.canal_amarelo = valor;
+                    break;
+                case "6":
+                    obj.canal_efeitos = valor;
+                    break;
+
+                default:
+                    console.log("slider nao identificado: set_value_meu_slider - slider: " + local_slider);
+                    break;
+            }
+            //console.log(obj);
+        })
     } else {
         console.log("Slider não encontrado")
     }
@@ -376,13 +326,4 @@ function set_value_meu_slider(local_slider, valor){
 
 function mapValue(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-function RGBWYtoRGB(R, G, B, W, Y){
-    let normalR = R + G + B || 1;
-    const red = Math.min(255, R + Y/2 + W*(R/normalR));
-    const green = Math.min(255, G + Y/2 + W*(G/normalR));
-    const blue = Math.min(255, B + W*(B/normalR));
-    
-    return {red, green, blue};
 }
