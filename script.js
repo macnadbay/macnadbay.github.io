@@ -142,8 +142,33 @@ function add_classe_objeto(N) {
 }*/
 
 function increment_slider(event){
-    objeto = this;
-    console.log("slide " + objeto.dataset.id);
+    let objeto = this;
+    //console.log("incremente_slider: slide " + objeto.dataset.id);
+    let l_slider = document.getElementById("meu_slider"+objeto.dataset.id);
+    if(l_slider){
+        let i = Math.min(255, parseInt(l_slider.dataset.valor) + 1);
+        // console.log(i);
+        //meu_slider_set_valor(l_slider, i+1);
+        set_posicao_value_meu_slider(objeto.dataset.id, i);
+    } else {
+        console.log("increment_slider: slider nao identificado")
+    }
+    
+}
+
+function decrement_slider(event){
+    let objeto = this;
+    //console.log("decrement_slider: slide " + objeto.dataset.id);
+    let l_slider = document.getElementById("meu_slider"+objeto.dataset.id);
+    if(l_slider){
+        let i = Math.max(0, parseInt(l_slider.dataset.valor) - 1);
+        // console.log(i);
+        //meu_slider_set_valor(l_slider, i+1);
+        set_posicao_value_meu_slider(objeto.dataset.id, i);
+    } else {
+        console.log("decrement_slider: slider nao identificado")
+    }
+    
 }
 
 function add_meu_slider(){
@@ -232,6 +257,9 @@ function add_meu_slider(){
         div_inferior_conteudo.classList.add("meu_slider_mais_conteudo");
         div_inferior_conteudo.innerHTML = "-";
         div_inferior.appendChild(div_inferior_conteudo);
+        div_inferior.dataset.id = index;
+        div_inferior.addEventListener("mousedown", decrement_slider);
+
         //div_inferior.addEventListener("onclick", minus)
 
         //console.log(comando);
@@ -262,7 +290,7 @@ function dragSlider(event){
 function set_posicao_value_meu_slider(local_slider,valor){
     let l_slider = document.getElementById("meu_slider"+local_slider);
     if(l_slider){
-        l_slider.innerText = parseInt(valor);
+        meu_slider_set_valor(l_slider,valor);
         valor = mapValue(valor, 0, 255, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, l_slider.parentElement.offsetTop);
         l_slider.style.top = valor + "px";
     } else {
@@ -278,7 +306,7 @@ function set_posicao_meu_slider(local_slider, valor){
         set_value_posicao_meu_slider(local_slider, valor);
         //l_slider.innerHTML = Math.round(valor);
     } else {
-        console.log("Slider não encontrado")
+        console.log("set_posicao_meu_slider: Slider não encontrado")
     }
 }
 
@@ -288,40 +316,49 @@ function set_value_posicao_meu_slider(local_slider, valor){
         //console.log("valor: "+ valor);
         valor = mapValue(valor, l_slider.parentElement.offsetTop, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, 255, 0);
         //console.log((l_slider.parentElement.offsetTop));
-        l_slider.innerHTML = Math.round(valor);
-        objetos_selecionados.forEach(obj=>{
-            switch (local_slider) {
-                case "0":
-                    obj.intensidade = valor;
-                    break;
-                case "1":
-                    obj.canal_vermelho = valor;
-                    break;
-                case "2":
-                    obj.canal_verde = valor;
-                    break;
-                case "3":
-                    obj.canal_azul = valor
-                    break;
-                case "4":
-                    obj.canal_branco = valor;
-                    break;
-                case "5":
-                    obj.canal_amarelo = valor;
-                    break;
-                case "6":
-                    obj.canal_efeitos = valor;
-                    break;
-
-                default:
-                    console.log("slider nao identificado: set_value_meu_slider - slider: " + local_slider);
-                    break;
-            }
-            //console.log(obj);
-        })
+        meu_slider_set_valor(l_slider, Math.round(valor));
     } else {
-        console.log("Slider não encontrado")
+        console.log("set_value_posicao_meu_slider: Slider não encontrado")
     }
+}
+
+function meu_slider_set_valor(l_slider, valor){
+    l_slider.dataset.valor = Math.round(valor);
+    l_slider.innerText = Math.round(valor);
+    
+    objetos_selecionados.forEach(obj=>{
+        let index = l_slider.dataset.id;
+        console.log("meu_slider_set_valor: " + index);
+        switch (index) {
+            case "LIGHT":
+                obj.intensidade = valor;
+                break;
+            case "RED":
+                obj.canal_vermelho = valor;
+                break;
+            case "GREEN":
+                obj.canal_verde = valor;
+                break;
+            case "BLUE":
+                obj.canal_azul = valor
+                break;
+            case "WHITE":
+                obj.canal_branco = valor;
+                break;
+            case "YELLOW":
+                obj.canal_amarelo = valor;
+                break;
+            case "CORES":
+                obj.canal_efeitos = valor;
+                break;
+
+            default:
+                //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                break;
+        }
+        obj.style.backgroundcolor = rgb(obj);
+        //console.log(obj);
+    })
 }
 
 function mapValue(x, in_min, in_max, out_min, out_max) {
