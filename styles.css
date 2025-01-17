@@ -41,6 +41,12 @@
     position: absolute;/**/
     border: solid 1px black;
     user-select: none;
+    /*-webkit-text-stroke: 0.02rem black;*/
+    text-shadow: 
+    1px 1px 0px black,   /* sombra à direita e abaixo */
+    -1px -1px 0px black, /* sombra à esquerda e acima */
+    1px -1px 0px black,  /* sombra à direita e acima */
+    -1px 1px 0px black;
 }
 
 .azul{
@@ -48,7 +54,8 @@
 }
 
 .selecionado{
-    border: solid 4px rgb(255, 25, 0);
+    border: solid 1px rgb(0, 0, 0);
+    outline: solid 2px red;
 }
 
 .comando{

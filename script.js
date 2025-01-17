@@ -1,12 +1,27 @@
 /* Script with function to setup html enviroment*/
 
 class Objetos_DMX{
+    static contadorID = 0;
     constructor (canais = 8, endereco = 1){
         this.canais = canais;
         this.endereco = endereco;
+        this.id = Objetos_DMX.contadorID++;
+        this.intensidade = 0;
+        this.vermelho = 0;
+        this.verde = 0;
+        this.azul = 0;
+        this.branco = 0;
+        this.amarelo = 0;
+        this.efeitos = 0;
+        this.pisca = 0;
+        this.x = 0;
+        this.y = 0;
+        this.x_fine = 0;
+        this.y_fine = 0;
     }
 
-    obj = null;
+    
+    obj = null; //representa a div na pagina
     canal_intensidade = null;
     canal_vermelho = null;
     canal_verde = null;
@@ -20,17 +35,18 @@ class Objetos_DMX{
     canal_efeitos = null;
     cabal_gobos = null;
 
-    intensidade = 0;
-    vermelho = 0;
-    verde = 0;
-    azul = 0;
-    branco = 0;
-    amarelo = 0;
-    x = 0;
-    y = 0;
-    x_fine = 0;
-    y_fine = 0;
-    efeitos = 0;
+    intensidade;
+    vermelho;
+    verde;
+    azul;
+    branco;
+    amarelo;
+    efeitos;
+    pisca;
+    x;
+    y;
+    x_fine;
+    y_fine;
 };
 // Referência ao elemento que será arrastado
 var objetos = [];
@@ -38,21 +54,28 @@ var dmx = [];
 var selecao = [];
 
 const NumeroObjetos = 6;
-var objeto;
-var slider_objeto;
+var objeto; //variavel para fazer o drag dos objetos
+var slider_objeto; //variavel para fazer o drag dos sliders
 
-const fundo = document.getElementById("fundo");
 const div_comandos = document.getElementById("comando");
+const div_fundo = document.getElementById("fundo");
+    div_fundo.addEventListener('click', FundoClick);
+
 const meu_status = document.getElementById("status");
 const objetos_selecionados = [];
+const sliders = [];
 
+const body = document.getElementById("body");
+    body.addEventListener('mousemove', MouseMove);
+    body.addEventListener('mousedown', MouseDown);
+    body.addEventListener('mouseup', MouseUp);
 // Variáveis para armazenar a posição inicial do mouse
 let offsetX, offsetY, isDragging = false;
 let slider_offsetX, slider_offsetY, slider_isDragging = false;
 
-document.addEventListener('mousemove', MouseMove);
-document.addEventListener('mouseup', MouseUp);
-document.addEventListener('mousedown', MouseDown);
+//document.addEventListener('mousemove', MouseMove);
+//document.addEventListener('mouseup', MouseUp);
+//document.addEventListener('mousedown', MouseDown);
 document.addEventListener('touchmove', converterTouchMoveToMousemove);
 document.addEventListener('touchend', converterTouchEndToMouseup);
 
@@ -60,7 +83,6 @@ add_classe_objeto(NumeroObjetos);
 add_meu_slider();
 
 // Quando o usuário começa a arrastar (pressiona o botão do mouse)
-
 
 function add_classe_objeto(N) {
     //const container = document.getElementById('container');
@@ -86,10 +108,15 @@ function add_classe_objeto(N) {
         dmx[ultimo].obj.innerText = `DMX ${dmx[ultimo].endereco}.${dmx[ultimo].canais}`;
         endereco_local = endereco_local + dmx[ultimo].canais;
         dmx[ultimo].obj.style.left = 100*i+"px";
+        let l_vermelho = Math.round(dmx[ultimo].vermelho*dmx[ultimo].intensidade/255);
+        let l_verde = Math.round(dmx[ultimo].verde*dmx[ultimo].intensidade/255);
+        let l_azul = Math.round(dmx[ultimo].azul*dmx[ultimo].intensidade/255);
+        dmx[ultimo].obj.style.backgroundColor = `rgb(${l_vermelho},${l_verde},${l_azul})`;
         //dmx[ultimo].obj.style.top = "300px";
         dmx[ultimo].obj.style.zIndex = ultimo;
-        dmx[ultimo].obj.dataset.id = ultimo;
+        dmx[ultimo].obj.id = dmx[ultimo].id;
         dmx[ultimo].obj.addEventListener('mousedown',dragFunction);
+        dmx[ultimo].obj.addEventListener('click', objClick);
         //dmx[ultimo].obj.addEventListener('touchmove', converterTouchMoveToMousemove);
         //dmx[ultimo].obj.addEventListener('touchend', converterTouchEndToMouseup);
         dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouseDown);
@@ -241,6 +268,7 @@ function add_meu_slider(){
         div_botao_slider.dataset.index = index;
         div_botao_slider.addEventListener("mousedown", dragSlider);
         div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
+        sliders.push(div_botao_slider);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
         //document.addEventListener('touchend', converterTouchEndToMouseup, false);
         //
@@ -270,21 +298,6 @@ function add_meu_slider(){
         //set_posicao_meu_slider(index, 100*Math.random());
         set_posicao_value_meu_slider(index, 255*Math.random());
     })
-}
-
-function dragSlider(event){
-    slider_objeto= this;
-    slider_isDragging = true;
-
-    // Calcula a diferença entre a posição do mouse e a posição do elemento
-    slider_offsetX = 0; //event.clientX - this.getBoundingClientRect().left;
-    slider_offsetY = event.clientY - this.offsetTop;
-    // Desabilitar seleção de texto enquanto arrasta (para uma melhor experiência)
-    //document.body.style.userSelect = 'none';
-    //slider_objeto.style.userSelect = "none";
-    //slider_objeto.style.backgroundColor = "rgb(255,0,0)";
-    //event.preventDefault();
-    //meu_status.innerText = "mouse down slider";
 }
 
 function set_posicao_value_meu_slider(local_slider,valor){
@@ -328,36 +341,44 @@ function meu_slider_set_valor(l_slider, valor){
     
     objetos_selecionados.forEach(obj=>{
         let index = l_slider.dataset.id;
-        console.log("meu_slider_set_valor: " + index);
+        //console.log("meu_slider_set_valor: " + index);
         switch (index) {
             case "LIGHT":
-                obj.intensidade = valor;
+                dmx[obj.id].intensidade = valor;
                 break;
             case "RED":
-                obj.canal_vermelho = valor;
+                dmx[obj.id].vermelho = valor;
                 break;
             case "GREEN":
-                obj.canal_verde = valor;
+                dmx[obj.id].verde = valor;
                 break;
             case "BLUE":
-                obj.canal_azul = valor
+                dmx[obj.id].azul = valor
                 break;
             case "WHITE":
-                obj.canal_branco = valor;
+                dmx[obj.id].branco = valor;
                 break;
             case "YELLOW":
-                obj.canal_amarelo = valor;
+                dmx[obj.id].amarelo = valor;
                 break;
             case "CORES":
-                obj.canal_efeitos = valor;
+                dmx[obj.id].efeitos = valor;
                 break;
 
             default:
                 //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
                 break;
         }
-        obj.style.backgroundcolor = rgb(obj);
-        //console.log(obj);
+            let lintensidade = dmx[obj.id].intensidade;
+            let lvermelho = dmx[obj.id].vermelho*lintensidade/255;
+            let lverde = dmx[obj.id].verde*lintensidade/255;
+            let lazul = dmx[obj.id].azul*lintensidade/255;   
+            dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;
+        //obj.style.backgroundColor = `rgb(${obj.canal_vermelho}, ${obj.canal_verde}, ${obj.canal_azul})`;
+        //obj.style.backgroundColor = "red";
+        //obj.style.top = 10 + 'px';
+        //AQUIIIIIIIIIIIII
+        //console.log(;
     })
 }
 

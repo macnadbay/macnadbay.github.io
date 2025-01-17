@@ -5,12 +5,6 @@ var meu_status_new;
 let touchTimeout = null;
 //let lastTouch = 0;
 
-function status_out(texto){
-    meu_status_old = meu_status_new;
-    meu_status_new = texto;
-    meu_status.innerText = "OLD " + meu_status_old + "\n NEW: " + meu_status_new;
-}
-
 function converterTouchToMouseDown(event) {
     // Obtém as informações do toque (coordenadas do toque)
   event.preventDefault();

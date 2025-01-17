@@ -1,3 +1,10 @@
+
+function status_out(texto){
+    meu_status_old = meu_status_new;
+    meu_status_new = texto;
+    meu_status.innerText = "OLD " + meu_status_old + "\n NEW: " + meu_status_new;
+}
+
 function dragFunction(event) {
     // Evitar que o arrasto aconteça se o clique for em qualquer coisa que não a área do arrasto
     isDragging = true;
@@ -53,6 +60,19 @@ function dragFunction(event) {
             objSel.dataset.offsetY = event.clientY - objSel.getBoundingClientRect().top;
         })
     }
+    let ultimo = objetos_selecionados.length - 1;
+    if(ultimo >= 0){
+        status_out(objetos_selecionados[ultimo].id);
+        set_posicao_value_meu_slider(0, dmx[objetos_selecionados[ultimo].id].intensidade);
+        set_posicao_value_meu_slider(1, dmx[objetos_selecionados[ultimo].id].vermelho);
+        set_posicao_value_meu_slider(2, dmx[objetos_selecionados[ultimo].id].verde);
+        set_posicao_value_meu_slider(3, dmx[objetos_selecionados[ultimo].id].azul);
+        set_posicao_value_meu_slider(4, dmx[objetos_selecionados[ultimo].id].branco);
+        set_posicao_value_meu_slider(5, dmx[objetos_selecionados[ultimo].id].amarelo);
+        set_posicao_value_meu_slider(6, dmx[objetos_selecionados[ultimo].id].efeitos);
+    }
+    //set_posicao_value_meu_slider(0, objetos_selecionados[ultimo].id);
+    
     //console.log(objetos_selecionados.map(div => div.dataset.id));
 };
 
@@ -65,7 +85,7 @@ function MouseDown(event){
         
     } else {
         //objetos_selecionados.forEach((objSel, index) => {
-        //    objSel.classList.remove("selecionado");
+          //  objSel.classList.remove("selecionado");
         //})
         //objetos_selecionados.length = 0;
     }
@@ -76,6 +96,8 @@ function MouseMove(event) {
     document.body.style.userSelect = 'none';
     event.preventDefault();
     event.stopPropagation();
+    //status_out("mouse down slider 1");
+
     if (isDragging) {
         // Atualiza a posição do elemento com base na posição do mouse
         //caixa.style.left = Math.min(Math.max(0,event.clientX - offsetX), window.innerWidth-caixa.offsetWidth) + 'px';
@@ -99,6 +121,7 @@ function MouseMove(event) {
         //slider_objeto.style.top = Math.min(max, Math.max(min, event.clientY - slider_offsetY) )+ 'px';
         let pos = Math.min(max, Math.max(min, event.clientY - slider_offsetY) ); //+ 'px';
         set_posicao_meu_slider(slider_objeto.dataset.index, pos);
+        //status_out("mouse down slider");
         //console.log(slider_objeto.style.top);
         //console.log(slider_objeto.dataset.index);
         //console.log(min);
@@ -117,4 +140,35 @@ function MouseUp(){
     //document.body.style.userSelect = ''; // Restaura a seleção de texto
     slider_isDragging = false;
     //status_out("mouse up"); 
+}
+
+function dragSlider(event){
+    slider_objeto= this;
+    slider_isDragging = true;
+
+    // Calcula a diferença entre a posição do mouse e a posição do elemento
+    slider_offsetX = 0; //event.clientX - this.getBoundingClientRect().left;
+    slider_offsetY = event.clientY - this.offsetTop;
+    // Desabilitar seleção de texto enquanto arrasta (para uma melhor experiência)
+    //document.body.style.userSelect = 'none';
+    //slider_objeto.style.userSelect = "none";
+    //slider_objeto.style.backgroundColor = "rgb(255,0,0)";
+    //event.preventDefault();
+    //status_out("mouse down slider");
+}
+
+function FundoClick(event){
+    isDragging = false;
+    //document.body.style.userSelect = ''; // Restaura a seleção de texto
+    slider_isDragging = false;
+    //status_out("mouse up"); 
+    objetos_selecionados.forEach((objSel, index) => {
+        objSel.classList.remove("selecionado");
+    })
+    objetos_selecionados.length = 0;
+}
+
+function objClick(event){
+    event.stopPropagation();
+    event.preventDefault();
 }
