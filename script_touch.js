@@ -7,9 +7,6 @@ let touchTimeout = null;
 
 function converterTouchToMouseDown(event) {
     // Obtém as informações do toque (coordenadas do toque)
-  event.preventDefault();
-  event.stopPropagation();
-    
   if (activeTouchId === null) { //se for o primeito toque
     // Salva o ID do primeiro toque
     activeTouchId = event.touches[0].identifier;
@@ -18,6 +15,26 @@ function converterTouchToMouseDown(event) {
     // Detectar se é um duplo toque (em 300ms, por exemplo)
     //let temp = lastTouch;
     //lastTouch = currentTime;
+    status_out(event.target.id);
+    if(event.target.id == "fundo"){
+      FundoClick(event);
+      event.stopPropagation();
+      event.preventDefault();
+      return;
+    }
+
+    if(event.target.id == "body"){
+      //event.stopPropagation();
+      //event.preventDefault();
+      return;
+    }
+
+    if(event.target.id == "comando"){
+      //event.stopPropagation();
+      //event.preventDefault();
+      return;
+    }
+
     //if (currentTime - temp < 300) {
         //simulateMouseDownShift(event);
         //return;
@@ -36,11 +53,14 @@ function converterTouchToMouseDown(event) {
         }, 200); // Tempo limite para reconhecer toque duplo
     }
   } else {
-        // Ignora toques adicionais
-        //status_out("Toque adicional ignorado");
-        return;
+    // Ignora toques adicionais
+    //status_out("Toque adicional ignorado");
+    event.preventDefault();
+    event.stopPropagation();
+    return;
   }
-    
+  event.preventDefault();
+  event.stopPropagation();
   //const touch = event.changedTouches[0];
   //console.log(event.type);
   //meu_status.innerText = event.type;
@@ -80,6 +100,7 @@ function simulateMouseDownShift(touchEvent) {
     if (targetElement) {
       targetElement.dispatchEvent(mouseEvent);
     }
+    status_out("simulateMouseDownShift");
 }
 
 function simulateMouseDown(touchEvent) {
@@ -99,19 +120,19 @@ function simulateMouseDown(touchEvent) {
   if (targetElement) {
     targetElement.dispatchEvent(mouseEvent);
   }
+  status_out("simulateMouseDown: " + touchEvent.target.id);
 }
 
 // Adiciona o ouvinte de eventos para touchstart
 function converterTouchMoveToMousemove(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
     const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
 
     if (activeTouchId !== null) {
         // Verifica se o movimento pertence ao toque inicial
         if (touch) {
           //status_out("Movimento do primeiro toque:" + touch.clientX + "y-" + touch.clientY);
+          event.preventDefault();
+          event.stopPropagation();
         } else {
           //status_out("Movimento ignorado");
           return;
@@ -136,12 +157,23 @@ function converterTouchMoveToMousemove(event) {
     });
   
     // Dispara o evento de mouse no mesmo alvo do evento de toque
-    touch.target.dispatchEvent(mouseEvent);    
+    //touch.target.dispatchEvent(mouseEvent);    
+    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (targetElement) {
+      targetElement.dispatchEvent(mouseEvent);
+    }
+    status_out("simulateMouseMove");
+    status_out(event.target);
 }
 
 function converterTouchEndToMouseup(event) {
     event.preventDefault();
-    event.stopPropagation();
+    //event.stopPropagation();
+    status_out("touchUP: " + event.target.id);
+    objeto = null;
+    isDragging = false;
+    slider_isDragging = false;
+    clearTimeout(touchTimeout);
 
     const touch = Array.from(event.changedTouches).find(t => t.identifier === activeTouchId);
     if (touch) {
@@ -151,6 +183,7 @@ function converterTouchEndToMouseup(event) {
        // status_out("Touch end adicional ignorado");
         return;
     }
+    event.stopPropagation();
 
     //const touch = event.changedTouches[0];
     //console.log(event.type);
@@ -173,5 +206,9 @@ function converterTouchEndToMouseup(event) {
     });
   
     // Dispara o evento de mouse no mesmo alvo do evento de toque
-    touch.target.dispatchEvent(mouseEvent);  
+    //touch.target.dispatchEvent(mouseEvent);  
+    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (targetElement) {
+      targetElement.dispatchEvent(mouseEvent);
+    }
   }

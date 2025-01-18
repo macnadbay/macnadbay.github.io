@@ -2,12 +2,13 @@
 function status_out(texto){
     meu_status_old = meu_status_new;
     meu_status_new = texto;
-    meu_status.innerText = "OLD " + meu_status_old + "\n NEW: " + meu_status_new;
+    meu_status.innerText = "OLD: " + meu_status_old + "\n NEW: " + meu_status_new;
 }
 
 function dragFunction(event) {
     // Evitar que o arrasto aconteça se o clique for em qualquer coisa que não a área do arrasto
     isDragging = true;
+    slider_isDragging = false;
     objeto = this;
 
     event.preventDefault();
@@ -62,14 +63,14 @@ function dragFunction(event) {
     }
     let ultimo = objetos_selecionados.length - 1;
     if(ultimo >= 0){
-        status_out(objetos_selecionados[ultimo].id);
-        set_posicao_value_meu_slider(0, dmx[objetos_selecionados[ultimo].id].intensidade);
-        set_posicao_value_meu_slider(1, dmx[objetos_selecionados[ultimo].id].vermelho);
-        set_posicao_value_meu_slider(2, dmx[objetos_selecionados[ultimo].id].verde);
-        set_posicao_value_meu_slider(3, dmx[objetos_selecionados[ultimo].id].azul);
-        set_posicao_value_meu_slider(4, dmx[objetos_selecionados[ultimo].id].branco);
-        set_posicao_value_meu_slider(5, dmx[objetos_selecionados[ultimo].id].amarelo);
-        set_posicao_value_meu_slider(6, dmx[objetos_selecionados[ultimo].id].efeitos);
+        //status_out(objetos_selecionados[ultimo].id);
+        set_posicao_value_meu_slider(0, dmx[objetos_selecionados[ultimo].id].intensidade, false);
+        set_posicao_value_meu_slider(1, dmx[objetos_selecionados[ultimo].id].vermelho, false);
+        set_posicao_value_meu_slider(2, dmx[objetos_selecionados[ultimo].id].verde, false);
+        set_posicao_value_meu_slider(3, dmx[objetos_selecionados[ultimo].id].azul, false);
+        set_posicao_value_meu_slider(4, dmx[objetos_selecionados[ultimo].id].branco, false);
+        set_posicao_value_meu_slider(5, dmx[objetos_selecionados[ultimo].id].amarelo, false);
+        set_posicao_value_meu_slider(6, dmx[objetos_selecionados[ultimo].id].efeitos, false);
     }
     //set_posicao_value_meu_slider(0, objetos_selecionados[ultimo].id);
     
@@ -144,6 +145,8 @@ function MouseUp(){
 
 function dragSlider(event){
     slider_objeto= this;
+    objeto = null;
+    isDragging = false;
     slider_isDragging = true;
 
     // Calcula a diferença entre a posição do mouse e a posição do elemento
@@ -153,7 +156,8 @@ function dragSlider(event){
     //document.body.style.userSelect = 'none';
     //slider_objeto.style.userSelect = "none";
     //slider_objeto.style.backgroundColor = "rgb(255,0,0)";
-    //event.preventDefault();
+    event.preventDefault();
+    event.stopPropagation();
     //status_out("mouse down slider");
 }
 

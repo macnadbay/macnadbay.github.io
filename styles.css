@@ -11,6 +11,14 @@
 }*/
 *{
     user-select: none !important;
+    -webkit-user-select: none !important;
+    
+}
+
+input, textarea {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    pointer-events: none !important; /* Impede a interação com o campo */
 }
 
 .fundo{
@@ -37,7 +45,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 5%;
-    cursor: move;
+    cursor: pointer ;
     position: absolute;/**/
     border: solid 1px black;
     user-select: none;

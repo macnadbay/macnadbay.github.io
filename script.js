@@ -60,6 +60,7 @@ var slider_objeto; //variavel para fazer o drag dos sliders
 const div_comandos = document.getElementById("comando");
 const div_fundo = document.getElementById("fundo");
     div_fundo.addEventListener('click', FundoClick);
+    div_fundo.addEventListener('touchstart', converterTouchToMouseDown);
 
 const meu_status = document.getElementById("status");
 const objetos_selecionados = [];
@@ -69,6 +70,7 @@ const body = document.getElementById("body");
     body.addEventListener('mousemove', MouseMove);
     body.addEventListener('mousedown', MouseDown);
     body.addEventListener('mouseup', MouseUp);
+    body.addEventListener('touchstart', converterTouchToMouseDown);
 // Variáveis para armazenar a posição inicial do mouse
 let offsetX, offsetY, isDragging = false;
 let slider_offsetX, slider_offsetY, slider_isDragging = false;
@@ -180,7 +182,8 @@ function increment_slider(event){
     } else {
         console.log("increment_slider: slider nao identificado")
     }
-    
+    //event.stopPropagation();
+    //event.preventDefault();
 }
 
 function decrement_slider(event){
@@ -219,6 +222,8 @@ function add_meu_slider(){
 
 
         div_superior_conteudo.addEventListener("mousedown", increment_slider);
+        //div_superior_conteudo.addEventListener("touchstart", increment_slider);
+
         
         div_superior.appendChild(div_superior_conteudo);
         
@@ -267,7 +272,7 @@ function add_meu_slider(){
         div_botao_slider.dataset.id = comando;
         div_botao_slider.dataset.index = index;
         div_botao_slider.addEventListener("mousedown", dragSlider);
-        div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
+        //div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
         sliders.push(div_botao_slider);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
         //document.addEventListener('touchend', converterTouchEndToMouseup, false);
@@ -300,10 +305,11 @@ function add_meu_slider(){
     })
 }
 
-function set_posicao_value_meu_slider(local_slider,valor){
+function set_posicao_value_meu_slider(local_slider,valor, atualiza = true){
     let l_slider = document.getElementById("meu_slider"+local_slider);
     if(l_slider){
-        meu_slider_set_valor(l_slider,valor);
+        if(atualiza)meu_slider_set_valor(l_slider,valor);
+        else meu_slider_set_valor(l_slider,valor,false);
         valor = mapValue(valor, 0, 255, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, l_slider.parentElement.offsetTop);
         l_slider.style.top = valor + "px";
     } else {
@@ -311,12 +317,13 @@ function set_posicao_value_meu_slider(local_slider,valor){
     }
 }
 
-function set_posicao_meu_slider(local_slider, valor){
+function set_posicao_meu_slider(local_slider, valor, atualiza = true){
     let l_slider = document.getElementById("meu_slider"+local_slider);
     if(l_slider){
         l_slider.style.top = valor + "px"; //mapValue(valor, 255, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
         //console.log(l_slider.parentNode.offsetHeight);
-        set_value_posicao_meu_slider(local_slider, valor);
+        if(atualiza)set_value_posicao_meu_slider(local_slider, valor);
+        else set_value_posicao_meu_slider(local_slider, valor, atualiza);
         //l_slider.innerHTML = Math.round(valor);
     } else {
         console.log("set_posicao_meu_slider: Slider não encontrado")
@@ -335,51 +342,54 @@ function set_value_posicao_meu_slider(local_slider, valor){
     }
 }
 
-function meu_slider_set_valor(l_slider, valor){
+function meu_slider_set_valor(l_slider, valor, atualiza = true){
     l_slider.dataset.valor = Math.round(valor);
     l_slider.innerText = Math.round(valor);
     
-    objetos_selecionados.forEach(obj=>{
-        let index = l_slider.dataset.id;
-        //console.log("meu_slider_set_valor: " + index);
-        switch (index) {
-            case "LIGHT":
-                dmx[obj.id].intensidade = valor;
-                break;
-            case "RED":
-                dmx[obj.id].vermelho = valor;
-                break;
-            case "GREEN":
-                dmx[obj.id].verde = valor;
-                break;
-            case "BLUE":
-                dmx[obj.id].azul = valor
-                break;
-            case "WHITE":
-                dmx[obj.id].branco = valor;
-                break;
-            case "YELLOW":
-                dmx[obj.id].amarelo = valor;
-                break;
-            case "CORES":
-                dmx[obj.id].efeitos = valor;
-                break;
+    if(atualiza){
+        objetos_selecionados.forEach(obj=>{
+            let index = l_slider.dataset.id;
+            //console.log("meu_slider_set_valor: " + index);
+            switch (index) {
+                case "LIGHT":
+                    dmx[obj.id].intensidade = valor;
+                    break;
+                case "RED":
+                    dmx[obj.id].vermelho = valor;
+                    break;
+                case "GREEN":
+                    dmx[obj.id].verde = valor;
+                    break;
+                case "BLUE":
+                    dmx[obj.id].azul = valor
+                    break;
+                case "WHITE":
+                    dmx[obj.id].branco = valor;
+                    break;
+                case "YELLOW":
+                    dmx[obj.id].amarelo = valor;
+                    break;
+                case "CORES":
+                    dmx[obj.id].efeitos = valor;
+                    break;
 
-            default:
-                //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
-                break;
-        }
+                default:
+                    //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                    break;
+            }
+            
             let lintensidade = dmx[obj.id].intensidade;
             let lvermelho = dmx[obj.id].vermelho*lintensidade/255;
             let lverde = dmx[obj.id].verde*lintensidade/255;
             let lazul = dmx[obj.id].azul*lintensidade/255;   
             dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;
-        //obj.style.backgroundColor = `rgb(${obj.canal_vermelho}, ${obj.canal_verde}, ${obj.canal_azul})`;
-        //obj.style.backgroundColor = "red";
-        //obj.style.top = 10 + 'px';
-        //AQUIIIIIIIIIIIII
-        //console.log(;
-    })
+            //obj.style.backgroundColor = `rgb(${obj.canal_vermelho}, ${obj.canal_verde}, ${obj.canal_azul})`;
+            //obj.style.backgroundColor = "red";
+            //obj.style.top = 10 + 'px';
+            //AQUIIIIIIIIIIIII
+            //console.log(;
+        })
+    }
 }
 
 function mapValue(x, in_min, in_max, out_min, out_max) {
