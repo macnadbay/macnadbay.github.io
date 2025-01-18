@@ -2,7 +2,7 @@
 function status_out(texto){
     meu_status_old = meu_status_new;
     meu_status_new = texto;
-    meu_status.innerText = "OLD: " + meu_status_old + "\n NEW: " + meu_status_new;
+    meu_status.innerText =  "NEW: " + meu_status_new + "\t" + "OLD: " + meu_status_old;
 }
 
 function dragFunction(event) {
@@ -158,14 +158,21 @@ function dragSlider(event){
     //slider_objeto.style.backgroundColor = "rgb(255,0,0)";
     event.preventDefault();
     event.stopPropagation();
-    //status_out("mouse down slider");
+    status_out("mouse down slider");
 }
 
 function FundoClick(event){
+    event.stopPropagation();
+    event.preventDefault();
+    if (event.eventPhase !== Event.AT_TARGET) {
+        return; // Sai da função se o evento não estiver na fase "at target"
+    }
+
     isDragging = false;
     //document.body.style.userSelect = ''; // Restaura a seleção de texto
     slider_isDragging = false;
-    //status_out("mouse up"); 
+    status_out(event.target.id);
+    status_out(event); 
     objetos_selecionados.forEach((objSel, index) => {
         objSel.classList.remove("selecionado");
     })
@@ -175,4 +182,9 @@ function FundoClick(event){
 function objClick(event){
     event.stopPropagation();
     event.preventDefault();
+    objetos_selecionados.forEach((objSel, index) => {
+        objSel.classList.remove("selecionado");
+    })
+    objetos_selecionados.length = 0;
+    status_out("objClick");
 }

@@ -12,13 +12,18 @@
 *{
     user-select: none !important;
     -webkit-user-select: none !important;
-    
 }
 
 input, textarea {
     user-select: none !important;
     -webkit-user-select: none !important;
     pointer-events: none !important; /* Impede a interação com o campo */
+}
+
+body{
+    touch-action: none;
+    overflow: hidden;
+
 }
 
 .fundo{
@@ -176,6 +181,17 @@ input, textarea {
     overflow: hidden;
 }
 
+.meu_slider_botao::before{
+    content: '';
+    position: absolute;
+    top: -50px; /* Aumenta a área de interação acima */
+    left: -50px; /* Aumenta a área de interação à esquerda */
+    right: -50px; /* Aumenta a área de interação à direita */
+    bottom: -50px; /* Aumenta a área de interação abaixo */
+    background: red; /*transparent; /* Mantém a área invisível */
+    pointer-events: auto;
+}
+
 .meu_slider_centro_direita{
     height: 100%;
     width: 30%;
@@ -195,6 +211,7 @@ input, textarea {
     padding: 0px;
     width: 100%;
     border-top: solid 1px black;
+    cursor: pointer;
 }
 
 .vertical_slider{
