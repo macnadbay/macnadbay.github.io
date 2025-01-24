@@ -83,7 +83,7 @@ document.addEventListener('touchend', TouchEndSliders);
 
 add_classe_objeto(NumeroObjetos);
 add_meu_slider();
-
+moving_space();
 // Quando o usuário começa a arrastar (pressiona o botão do mouse)
 
 function add_classe_objeto(N) {
@@ -347,44 +347,55 @@ function meu_slider_set_valor(local_slider, valor, atualiza = true){
      l_slider.style.display = '';
     
 
-    //status_out("meu_slider_set_valor: " + valor);
+    //status_out("meu_slider_set_valor: " + valor + "; index: " + local_slider);
     
     if(atualiza){
         objetos_selecionados.forEach(obj=>{
             let index = local_slider; //l_slider.dataset.id;
             //console.log("meu_slider_set_valor: " + index);
             switch (index) {
-                case "LIGHT":
+                case "0":
                     dmx[obj.id].intensidade = valor;
                     break;
-                case "RED":
+                case "1":
                     dmx[obj.id].vermelho = valor;
                     break;
-                case "GREEN":
+                case "2":
                     dmx[obj.id].verde = valor;
                     break;
-                case "BLUE":
+                case "3":
                     dmx[obj.id].azul = valor
                     break;
-                case "WHITE":
+                case "4":
                     dmx[obj.id].branco = valor;
                     break;
-                case "YELLOW":
+                case "5":
                     dmx[obj.id].amarelo = valor;
                     break;
-                case "CORES":
+                case "6":
                     dmx[obj.id].efeitos = valor;
                     break;
 
                 default:
-                    //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                    console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                    status_out("meu_slider_ser_valor: slider nao identificado: " + index);
                     break;
             }
             
             let lintensidade = dmx[obj.id].intensidade;
-            let lvermelho = dmx[obj.id].vermelho*lintensidade/255;
-            let lverde = dmx[obj.id].verde*lintensidade/255;
-            let lazul = dmx[obj.id].azul*lintensidade/255;   
+            let lvermelho = dmx[obj.id].vermelho + dmx[obj.id].branco + dmx[obj.id].amarelo;
+            let lverde = dmx[obj.id].verde + dmx[obj.id].branco + dmx[obj.id].amarelo;
+            let lazul = dmx[obj.id].azul + dmx[obj.id].branco;
+            let norm = Math.max(lvermelho, lverde, lazul);
+            if(norm > 255){
+                lvermelho = Math.round(lvermelho*255/norm);
+                lverde = Math.round(lverde*255/norm);
+                lazul = Math.round(lazul*255/norm);
+            }
+            lvermelho = Math.round(lvermelho*lintensidade/255);
+            lverde = Math.round(lverde*lintensidade/255);
+            lazul = Math.round(lazul*lintensidade/255);
+
             dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;
             //obj.style.backgroundColor = `rgb(${obj.canal_vermelho}, ${obj.canal_verde}, ${obj.canal_azul})`;
             //obj.style.backgroundColor = "red";

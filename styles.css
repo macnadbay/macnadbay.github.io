@@ -181,16 +181,16 @@ body{
     overflow: hidden;
 }
 
-.meu_slider_botao::before{
+/*.meu_slider_botao::before{
     content: '';
     position: absolute;
-    top: -50px; /* Aumenta a área de interação acima */
-    left: -50px; /* Aumenta a área de interação à esquerda */
-    right: -50px; /* Aumenta a área de interação à direita */
-    bottom: -50px; /* Aumenta a área de interação abaixo */
-    background: red; /*transparent; /* Mantém a área invisível */
-    pointer-events: auto;
-}
+    top: -100px; /* Aumenta a área de interação acima */
+    /*left: -50px; /* Aumenta a área de interação à esquerda */
+    /*right: -50px; /* Aumenta a área de interação à direita */
+    /*bottom: -50px; /* Aumenta a área de interação abaixo */
+    /*background: red; /*transparent; /* Mantém a área invisível */
+    /*pointer-events: auto;
+}*/
 
 .meu_slider_centro_direita{
     height: 100%;
@@ -218,4 +218,14 @@ body{
     writing-mode: vertical-lr;
     direction: rtl;
     height: 100%;
+}
+
+.div_moving_space{
+    border: 2px solid red;
+    height: 100%;
+    aspect-ratio: 1/1;
+    background-color: darkgray;  
+    margin-inline: 5px;
+    box-shadow: 0px 4px 10px 0px;
+    padding: 5px;
 }

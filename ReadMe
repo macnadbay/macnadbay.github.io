@@ -1,8 +1,8 @@
 #1 Ativar toque duplo para funcionar como toque com tecla shift #FEITO
 #2 Ativar botoes de aumento e diminuicao dos slider > #FEITO
-#3 Ativar sliders para controle dos objetos selecionados.
-#3.1 Salvar variavel matriz que contem os sliders.
-#3.2 aumentar area de contato dos slides
+#3 Ativar sliders para controle dos objetos selecionados. #FEITO
+#3.1 Salvar variavel matriz que contem os sliders. #FEITO
+#3.2 aumentar area de contato dos slides 
 #4 Criar controle dos movs
 #5 Criar protocolo/arquivo de objetos
 #6 Criar Arquivo de Cenas
