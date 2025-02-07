@@ -173,7 +173,7 @@ function converterTouchMoveToMousemove(event) {
 
 function converterTouchEndToMouseup( event) {
     event.preventDefault();
-    //event.stopPropagation();
+    event.stopPropagation();
     status_out("touchUP: " + event.target.id);
     objeto = null;
     isDragging = false;
@@ -188,7 +188,7 @@ function converterTouchEndToMouseup( event) {
        // status_out("Touch end adicional ignorado");
         return;
     }
-    event.stopPropagation();
+    //event.stopPropagation();
 
     //const touch = event.changedTouches[0];
     //console.log(event.type);
@@ -243,21 +243,25 @@ function TouchEndSliders(event) {
   event.preventDefault();
   event.stopPropagation();
   
-  if(slider_isDragging)slider_isDragging = false;
-  if(isDragging)isDragging = false;
-  status_out("TouchEndSliders");
-  const touch = event.changedTouches[0]; // Primeiro ponto de toque
-  const mouseEvent = new MouseEvent("mouseup", {
-    bubbles: true,  // Propagar para os pais
-    cancelable: true, // O evento pode ser cancelado
-    view: window,  // A janela do navegador
-    clientX: touch.clientX,  // Posição X do toque
-    clientY: touch.clientY,  // Posição Y do toque
-    screenX: touch.screenX,  // Posição na tela
-    screenY: touch.screenY   // Posição na tela
-  });
-  const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (targetElement) {
+  if(event.target === event.currentTarget) {
+    if(slider_isDragging)slider_isDragging = false;
+    if(isDragging)isDragging = false;
+    if(activeTouchId)activeTouchId = null;
+    const touch = event.changedTouches[0]; // Primeiro ponto de toque
+  
+    const mouseEvent = new MouseEvent("mouseup", {
+      bubbles: true,  // Propagar para os pais
+      cancelable: true, // O evento pode ser cancelado
+      view: window,  // A janela do navegador
+      clientX: touch.clientX,  // Posição X do toque
+      clientY: touch.clientY,  // Posição Y do toque
+      screenX: touch.screenX,  // Posição na tela
+      screenY: touch.screenY   // Posição na tela
+    });
+    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (targetElement) {
+        status_out("TouchEndSliders " + targetElement.id);
         targetElement.dispatchEvent(mouseEvent);
-    }
+      }
+  }
 }
