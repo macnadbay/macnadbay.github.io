@@ -59,31 +59,35 @@ var slider_objeto; //variavel para fazer o drag dos sliders
 
 const div_comandos = document.getElementById("comando");
 const div_fundo = document.getElementById("fundo");
-    div_fundo.addEventListener('click', FundoClick);
-    div_fundo.addEventListener('touchstart', converterTouchToMouseDown);
+    div_fundo.addEventListener('mousedown', FundoDown);
+    div_fundo.addEventListener('mousemove', MouseMove);
+    //div_fundo.addEventListener('touchstart', converterTouchToMouseDown);
+    //div_fundo.addEventListener('touchend', TouchEndSliders);
+    div_fundo.addEventListener('mouseup', MouseUp);
+    //div_fundo.addEventListener('touchstart', converterTouchToMouseDown);*/
 
 const meu_status = document.getElementById("status");
 const objetos_selecionados = [];
 const sliders = [];
 
 const body = document.getElementById("body");
-    body.addEventListener('mousemove', MouseMove);
-    body.addEventListener('mousedown', MouseDown);
-    body.addEventListener('mouseup', MouseUp);
-    body.addEventListener('touchstart', converterTouchToMouseDown);
+    //body.addEventListener('mousemove', MouseMove);
+    //body.addEventListener('mousedown', MouseDown);
+    //body.addEventListener('mouseup', MouseUp);
+    //body.addEventListener('touchstart', converterTouchToMouseDown);
 // Variáveis para armazenar a posição inicial do mouse
 let offsetX, offsetY, isDragging = false;
 let slider_offsetX, slider_offsetY, slider_isDragging = false;
 
 //document.addEventListener('mousemove', MouseMove);
 //document.addEventListener('mouseup', MouseUp);
-//document.addEventListener('mousedown', MouseDown);
-document.addEventListener('touchmove', converterTouchMoveToMousemove);
-document.addEventListener('touchend', converterTouchEndToMouseup);
+//document.addEventListener('click', objClick);
+//document.addEventListener('touchmove', converterTouchMoveToMousemove);
+//document.addEventListener('touchend', TouchEndSliders);
 
 add_classe_objeto(NumeroObjetos);
 add_meu_slider();
-
+moving_space();
 // Quando o usuário começa a arrastar (pressiona o botão do mouse)
 
 function add_classe_objeto(N) {
@@ -110,18 +114,21 @@ function add_classe_objeto(N) {
         dmx[ultimo].obj.innerText = `DMX ${dmx[ultimo].endereco}.${dmx[ultimo].canais}`;
         endereco_local = endereco_local + dmx[ultimo].canais;
         dmx[ultimo].obj.style.left = 100*i+"px";
-        let l_vermelho = Math.round(dmx[ultimo].vermelho*dmx[ultimo].intensidade/255);
-        let l_verde = Math.round(dmx[ultimo].verde*dmx[ultimo].intensidade/255);
-        let l_azul = Math.round(dmx[ultimo].azul*dmx[ultimo].intensidade/255);
-        dmx[ultimo].obj.style.backgroundColor = `rgb(${l_vermelho},${l_verde},${l_azul})`;
+        //let l_vermelho = Math.round(dmx[ultimo].vermelho*dmx[ultimo].intensidade/255);
+        //let l_verde = Math.round(dmx[ultimo].verde*dmx[ultimo].intensidade/255);
+        //let l_azul = Math.round(dmx[ultimo].azul*dmx[ultimo].intensidade/255);
+        //dmx[ultimo].obj.style.backgroundColor = `rgb(${l_vermelho},${l_verde},${l_azul})`;
+        setCorObjeto(dmx[ultimo]); 
+
         //dmx[ultimo].obj.style.top = "300px";
         dmx[ultimo].obj.style.zIndex = ultimo;
         dmx[ultimo].obj.id = dmx[ultimo].id;
-        dmx[ultimo].obj.addEventListener('mousedown',dragFunction);
-        dmx[ultimo].obj.addEventListener('click', objClick);
+        dmx[ultimo].obj.addEventListener('mousedown', dragFunction);
+        //dmx[ultimo].obj.addEventListener('click', objClick);
+        //dmx[ultimo].obj.addEventListener('click', dragFunction);
         //dmx[ultimo].obj.addEventListener('touchmove', converterTouchMoveToMousemove);
         //dmx[ultimo].obj.addEventListener('touchend', converterTouchEndToMouseup);
-        dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouseDown);
+        //dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouseDown);
 
       /*  dmx[ultimo].obj.addEventListener('touchstart', converterTouchToMouse, false);
         dmx[ultimo].obj.addEventListener('touchmove', converterTouchToMouse, false);
@@ -172,33 +179,22 @@ function add_classe_objeto(N) {
 
 function increment_slider(event){
     let objeto = this;
-    //console.log("incremente_slider: slide " + objeto.dataset.id);
-    let l_slider = document.getElementById("meu_slider"+objeto.dataset.id);
-    if(l_slider){
-        let i = Math.min(255, parseInt(l_slider.dataset.valor) + 1);
-        // console.log(i);
-        //meu_slider_set_valor(l_slider, i+1);
-        set_posicao_value_meu_slider(objeto.dataset.id, i);
-    } else {
-        console.log("increment_slider: slider nao identificado")
-    }
-    //event.stopPropagation();
-    //event.preventDefault();
+    let i = Math.min(255, parseInt(sliders[objeto.dataset.id].dataset.valor) + 1);
+    // status_out("valor: "+sliders[objeto.dataset.id].dataset.valor);
+    //meu_slider_set_valor(l_slider, i+1);
+    set_posicao_value_meu_slider(objeto.dataset.id, i);
+    // console.log("increment_slider: slider nao identificado")
+    // status_out(objeto.id);
+    // event.stopPropagation();
+    // event.preventDefault();
 }
 
 function decrement_slider(event){
     let objeto = this;
-    //console.log("decrement_slider: slide " + objeto.dataset.id);
-    let l_slider = document.getElementById("meu_slider"+objeto.dataset.id);
-    if(l_slider){
-        let i = Math.max(0, parseInt(l_slider.dataset.valor) - 1);
-        // console.log(i);
-        //meu_slider_set_valor(l_slider, i+1);
-        set_posicao_value_meu_slider(objeto.dataset.id, i);
-    } else {
-        console.log("decrement_slider: slider nao identificado")
-    }
-    
+    let i = Math.max(0, parseInt(sliders[objeto.dataset.id].dataset.valor) - 1);
+    // status_out("valor: "+sliders[objeto.dataset.id].dataset.valor);
+    //meu_slider_set_valor(l_slider, i+1);
+    set_posicao_value_meu_slider(objeto.dataset.id, i);
 }
 
 function add_meu_slider(){
@@ -219,10 +215,10 @@ function add_meu_slider(){
         div_superior_conteudo.classList.add("meu_slider_mais_conteudo");
         div_superior_conteudo.innerHTML = "+";
         div_superior_conteudo.dataset.id = index;
-
-
-        div_superior_conteudo.addEventListener("mousedown", increment_slider);
-        //div_superior_conteudo.addEventListener("touchstart", increment_slider);
+        div_superior_conteudo.id = '+' + index;
+        div_superior_conteudo.addEventListener("click", increment_slider);
+        // div_superior_conteudo.addEventListener("mousedown", increment_slider);
+        div_superior_conteudo.addEventListener("touchstart", increment_slider);
 
         
         div_superior.appendChild(div_superior_conteudo);
@@ -273,6 +269,7 @@ function add_meu_slider(){
         div_botao_slider.dataset.index = index;
         div_botao_slider.addEventListener("mousedown", dragSlider);
         //div_botao_slider.addEventListener('touchstart', converterTouchToMouseDown);
+        //div_botao_slider.addEventListener('touchstart', TouchStartSliders);
         sliders.push(div_botao_slider);
         //div_botao_slider.addEventListener('touchmove', converterTouchMoveToMousemove, false);
         //document.addEventListener('touchend', converterTouchEndToMouseup, false);
@@ -291,7 +288,10 @@ function add_meu_slider(){
         div_inferior_conteudo.innerHTML = "-";
         div_inferior.appendChild(div_inferior_conteudo);
         div_inferior.dataset.id = index;
-        div_inferior.addEventListener("mousedown", decrement_slider);
+        // div_inferior.addEventListener("mousedown", decrement_slider);
+        div_inferior.addEventListener("click", decrement_slider);
+        div_inferior.addEventListener("touchstart", decrement_slider);
+
 
         //div_inferior.addEventListener("onclick", minus)
 
@@ -306,19 +306,21 @@ function add_meu_slider(){
 }
 
 function set_posicao_value_meu_slider(local_slider,valor, atualiza = true){
-    let l_slider = document.getElementById("meu_slider"+local_slider);
+    //let l_slider = document.getElementById("meu_slider"+local_slider);
+    let l_slider = sliders[local_slider];
     if(l_slider){
-        if(atualiza)meu_slider_set_valor(l_slider,valor);
-        else meu_slider_set_valor(l_slider,valor,false);
-        valor = mapValue(valor, 0, 255, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, l_slider.parentElement.offsetTop);
-        l_slider.style.top = valor + "px";
+        if(atualiza)meu_slider_set_valor(local_slider,valor);
+        else meu_slider_set_valor(local_slider,valor,false);
+        let top = mapValue(valor, 0, 255, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, l_slider.parentElement.offsetTop);
+        l_slider.style.top = top + "px";
     } else {
         console.log("set_posicao_value_meu_slider: Slider não encontrado")
     }
 }
 
 function set_posicao_meu_slider(local_slider, valor, atualiza = true){
-    let l_slider = document.getElementById("meu_slider"+local_slider);
+    // let l_slider = document.getElementById("meu_slider"+local_slider);
+    let l_slider = sliders[local_slider];
     if(l_slider){
         l_slider.style.top = valor + "px"; //mapValue(valor, 255, 0, l_slider.parentNode.offsetTop, l_slider.parentNode.offsetHeight + l_slider.offsetHeight/2 + 1) + 'px'; //Math.min(min, Math.max(max, event.clientY - slider_offsetY) )+ 'px';
         //console.log(l_slider.parentNode.offsetHeight);
@@ -330,68 +332,102 @@ function set_posicao_meu_slider(local_slider, valor, atualiza = true){
     }
 }
 
-function set_value_posicao_meu_slider(local_slider, valor){
-    let l_slider = document.getElementById("meu_slider"+local_slider);
+function set_value_posicao_meu_slider(local_slider, pos){
+    //let l_slider = document.getElementById("meu_slider"+local_slider);
+    let l_slider = sliders[local_slider];
     if(l_slider){
         //console.log("valor: "+ valor);
-        valor = mapValue(valor, l_slider.parentElement.offsetTop, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, 255, 0);
+        let valor = mapValue(pos, l_slider.parentElement.offsetTop, l_slider.parentElement.offsetHeight + l_slider.parentElement.offsetTop - l_slider.offsetHeight, 255, 0);
         //console.log((l_slider.parentElement.offsetTop));
-        meu_slider_set_valor(l_slider, Math.round(valor));
+        meu_slider_set_valor(local_slider, Math.round(valor));
     } else {
         console.log("set_value_posicao_meu_slider: Slider não encontrado")
     }
 }
 
-function meu_slider_set_valor(l_slider, valor, atualiza = true){
+function meu_slider_set_valor(local_slider, valor, atualiza = true){
+    let l_slider = sliders[local_slider];
     l_slider.dataset.valor = Math.round(valor);
     l_slider.innerText = Math.round(valor);
+     l_slider.style.display = 'none';
+     l_slider.offsetHeight; // Força o reflow
+     l_slider.style.display = '';
+    
+
+    //status_out("meu_slider_set_valor: " + valor + "; index: " + local_slider);
     
     if(atualiza){
         objetos_selecionados.forEach(obj=>{
-            let index = l_slider.dataset.id;
+            let index = local_slider; //l_slider.dataset.id;
             //console.log("meu_slider_set_valor: " + index);
             switch (index) {
-                case "LIGHT":
+                case "0":
                     dmx[obj.id].intensidade = valor;
                     break;
-                case "RED":
+                case "1":
                     dmx[obj.id].vermelho = valor;
                     break;
-                case "GREEN":
+                case "2":
                     dmx[obj.id].verde = valor;
                     break;
-                case "BLUE":
+                case "3":
                     dmx[obj.id].azul = valor
                     break;
-                case "WHITE":
+                case "4":
                     dmx[obj.id].branco = valor;
                     break;
-                case "YELLOW":
+                case "5":
                     dmx[obj.id].amarelo = valor;
                     break;
-                case "CORES":
+                case "6":
                     dmx[obj.id].efeitos = valor;
                     break;
 
                 default:
-                    //console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                    console.log("meu_slider_ser_valor: slider nao identificado: " + index);
+                    status_out("meu_slider_ser_valor: slider nao identificado: " + index);
                     break;
             }
             
-            let lintensidade = dmx[obj.id].intensidade;
-            let lvermelho = dmx[obj.id].vermelho*lintensidade/255;
-            let lverde = dmx[obj.id].verde*lintensidade/255;
-            let lazul = dmx[obj.id].azul*lintensidade/255;   
-            dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;
-            //obj.style.backgroundColor = `rgb(${obj.canal_vermelho}, ${obj.canal_verde}, ${obj.canal_azul})`;
-            //obj.style.backgroundColor = "red";
-            //obj.style.top = 10 + 'px';
-            //AQUIIIIIIIIIIIII
-            //console.log(;
+            setCorObjeto(obj);
+            /*let lintensidade = dmx[obj.id].intensidade;
+            let lvermelho = dmx[obj.id].vermelho + dmx[obj.id].branco + dmx[obj.id].amarelo;
+            let lverde = dmx[obj.id].verde + dmx[obj.id].branco + dmx[obj.id].amarelo;
+            let lazul = dmx[obj.id].azul + dmx[obj.id].branco;
+            let norm = Math.max(lvermelho, lverde, lazul);
+            if(norm > 255){
+                lvermelho = Math.round(lvermelho*255/norm);
+                lverde = Math.round(lverde*255/norm);
+                lazul = Math.round(lazul*255/norm);
+            }
+            lvermelho = Math.round(lvermelho*lintensidade/255);
+            lverde = Math.round(lverde*lintensidade/255);
+            lazul = Math.round(lazul*lintensidade/255);
+
+            dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;//*/
         })
     }
 }
 
 function mapValue(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function setCorObjeto(obj){
+    let lintensidade = dmx[obj.id].intensidade;
+    let lvermelho = dmx[obj.id].vermelho + dmx[obj.id].branco + dmx[obj.id].amarelo;
+    let lverde = dmx[obj.id].verde + dmx[obj.id].branco + dmx[obj.id].amarelo;
+    let lazul = dmx[obj.id].azul + dmx[obj.id].branco;
+    let norm = Math.max(lvermelho, lverde, lazul);
+    if(norm > 255){
+        lvermelho = Math.round(lvermelho*255/norm);
+        lverde = Math.round(lverde*255/norm);
+        lazul = Math.round(lazul*255/norm);
+    }
+    lvermelho = Math.round(lvermelho*lintensidade/255);
+    lverde = Math.round(lverde*lintensidade/255);
+    lazul = Math.round(lazul*lintensidade/255);
+
+    dmx[obj.id].obj.style.backgroundColor = `rgb(${lvermelho},${lverde}, ${lazul})`;//*/
+    
 }

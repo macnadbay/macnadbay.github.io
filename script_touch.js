@@ -125,7 +125,7 @@ function simulateMouseDown(touchEvent) {
 
 // Adiciona o ouvinte de eventos para touchstart
 function converterTouchMoveToMousemove(event) {
-    const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
+/*    const touch = Array.from(event.touches).find(t => t.identifier === activeTouchId);
 
     if (activeTouchId !== null) {
         // Verifica se o movimento pertence ao toque inicial
@@ -139,7 +139,10 @@ function converterTouchMoveToMousemove(event) {
         }
     } else {
         return;
-    }
+    }*/
+        event.preventDefault();
+        event.stopPropagation();
+   const touch = event.changedTouches[0]; // Primeiro ponto de toque
 
     //const touch = event.changedTouches[0];
     //console.log(event.type);
@@ -158,17 +161,19 @@ function converterTouchMoveToMousemove(event) {
   
     // Dispara o evento de mouse no mesmo alvo do evento de toque
     //touch.target.dispatchEvent(mouseEvent);    
-    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (targetElement) {
-      targetElement.dispatchEvent(mouseEvent);
-    }
+    //const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+    //if (targetElement) {
+      //targetElement.dispatchEvent(mouseEvent);
+    //}
+    event.target.dispatchEvent(mouseEvent);
     status_out("simulateMouseMove");
     status_out(event.target);
+    
 }
 
-function converterTouchEndToMouseup(event) {
+function converterTouchEndToMouseup( event) {
     event.preventDefault();
-    //event.stopPropagation();
+    event.stopPropagation();
     status_out("touchUP: " + event.target.id);
     objeto = null;
     isDragging = false;
@@ -183,7 +188,7 @@ function converterTouchEndToMouseup(event) {
        // status_out("Touch end adicional ignorado");
         return;
     }
-    event.stopPropagation();
+    //event.stopPropagation();
 
     //const touch = event.changedTouches[0];
     //console.log(event.type);
@@ -212,3 +217,51 @@ function converterTouchEndToMouseup(event) {
       targetElement.dispatchEvent(mouseEvent);
     }
   }
+
+function TouchStartSliders(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const touch = event.changedTouches[0]; // Primeiro ponto de toque
+  const mouseEvent = new MouseEvent("mousedown", {
+    bubbles: true,  // Propagar para os pais
+    cancelable: true, // O evento pode ser cancelado
+    view: window,  // A janela do navegador
+    clientX: touch.clientX,  // Posição X do toque
+    clientY: touch.clientY,  // Posição Y do toque
+    screenX: touch.screenX,  // Posição na tela
+    screenY: touch.screenY   // Posição na tela
+  });
+  const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (targetElement) {
+        targetElement.dispatchEvent(mouseEvent);
+    }
+    status_out("TouchStartSliders" + targetElement.id);
+}
+
+function TouchEndSliders(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  if(event.target === event.currentTarget) {
+    if(slider_isDragging)slider_isDragging = false;
+    if(isDragging)isDragging = false;
+    if(activeTouchId)activeTouchId = null;
+    const touch = event.changedTouches[0]; // Primeiro ponto de toque
+  
+    const mouseEvent = new MouseEvent("mouseup", {
+      bubbles: true,  // Propagar para os pais
+      cancelable: true, // O evento pode ser cancelado
+      view: window,  // A janela do navegador
+      clientX: touch.clientX,  // Posição X do toque
+      clientY: touch.clientY,  // Posição Y do toque
+      screenX: touch.screenX,  // Posição na tela
+      screenY: touch.screenY   // Posição na tela
+    });
+    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (targetElement) {
+        status_out("TouchEndSliders " + targetElement.id);
+        targetElement.dispatchEvent(mouseEvent);
+      }
+  }
+}
