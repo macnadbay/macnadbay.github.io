@@ -118,7 +118,7 @@ function ajusta_offset(objeto){
     })
 }
 
-// Quando o usuário move o mouse
+// Quando o usuário APERTA o mouse
 function MouseDown(event){
     document.body.style.userSelect = 'none';
     event.preventDefault();
@@ -174,7 +174,6 @@ function MouseMove(event) {
         //set_value_meu_slider(slider_objeto.dataset.index, slider_value);
         //console.log(slider_value);
     }
-    if(div_foco.classList.contains("selecionado"))focoMove(event);
 }
 
 // Quando o usuário solta o botão do mouse
@@ -220,10 +219,12 @@ function FundoDown(event){
     slider_isDragging = false;
     if(slider_objeto)slider_objeto.classList.remove("selecionado");
 
-    status_out(event.target.id);
-    status_out(event); 
+    //status_out(event.target.id);
+    //status_out(event); 
     objetos_selecionados.forEach((objSel, index) => {
         objSel.classList.remove("selecionado");
     })
     objetos_selecionados.length = 0;
+
+    if(div_foco.classList.contains("selecionado"))div_foco.classList.remove("selecionado");
 }

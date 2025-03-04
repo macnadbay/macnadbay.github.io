@@ -6,6 +6,7 @@ class Objetos_DMX{
         this.canais = canais;
         this.endereco = endereco;
         this.id = Objetos_DMX.contadorID++;
+        //this.id = Symbol("ID");
         this.intensidade = 0;
         this.vermelho = 0;
         this.verde = 0;
@@ -47,6 +48,7 @@ class Objetos_DMX{
     y;
     x_fine;
     y_fine;
+    modelo;
 };
 // Referência ao elemento que será arrastado
 var objetos = [];
@@ -58,6 +60,8 @@ var objeto; //variavel para fazer o drag dos objetos
 var slider_objeto; //variavel para fazer o drag dos sliders
 
 const div_comandos = document.getElementById("comando");
+    div_comandos.addEventListener('mousedown', FundoDown);
+
 const div_fundo = document.getElementById("fundo");
     div_fundo.addEventListener('mousedown', FundoDown);
     div_fundo.addEventListener('mousemove', MouseMove);
@@ -88,6 +92,7 @@ let slider_offsetX, slider_offsetY, slider_isDragging = false;
 add_classe_objeto(NumeroObjetos);
 add_meu_slider();
 moving_space();
+desenhe_controles();
 // Quando o usuário começa a arrastar (pressiona o botão do mouse)
 
 function add_classe_objeto(N) {
@@ -138,44 +143,6 @@ function add_classe_objeto(N) {
         fundo.appendChild(dmx[ultimo].obj);
     }
 }
-
-/*function add_slider_comando(){
-    const comandos = ["Intensidade", "Vermelho","Verde","Azul","Branco","Amarelo","Efeitos", "X","Y"];
-    comandos.forEach(comando => {
-        let div = document.createElement("div");
-        div.style.height= "100%";
-        div.style.width = "50px";
-        div.style.backgroundColor = "rgb(150, 150, 150)";
-        div.style.marginLeft = "2px";
-        div.style.overflow = "hidden";
-        div.style.border = "solid 1px black";
-        div.classList.add("div_slider");
-        //div.classList.add("container");
-
-        
-        let div_superior = document.createElement("div");
-        div_superior.classList.add("row");
-        div_superior.classList.add("slider_mais");
-        div_superior.innerHTML = "+";
-
-        let slider = document.createElement("input");
-        slider.type = "range";
-        slider.classList.add("vertical_slider");
-        //slider.classList.add("row");
-        slider.orient = "vertical";
-
-        let div_inferior = document.createElement("div");
-        div_inferior.classList.add("row");
-        div_inferior.classList.add("slider_menos");
-        div_inferior.innerHTML = "-";
-
-        //console.log(comando);
-        div.appendChild(div_superior);
-        div.appendChild(slider);
-        div.appendChild(div_inferior);
-        div_comandos.appendChild(div);
-    })
-}*/
 
 function increment_slider(event){
     let objeto = this;

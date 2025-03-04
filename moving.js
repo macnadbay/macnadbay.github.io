@@ -18,10 +18,10 @@
         //let canvas = document.getElementById(div.id); //errado
         desenhe_moving_map(canvas);
         desenheFoco();
-        //div_map.addEventListener("mousemove", focoMove);
+        div_map.addEventListener("mousemove", focoMove);
         div_map.addEventListener("mousedown", mapDown);
         div_map.addEventListener("dblclick", mapDblclick);
-
+        div_map.addEventListener("contextmenu", contextMenu);
     }
 
     function desenhe_moving_map(canvas){
@@ -105,6 +105,58 @@
         div_foco.dataset.offsetX = 0;
         div_foco.dataset.offsetY = 0;
         moveFoco(0, 0);
+    }
+
+    function desenhe_controles(){
+        let div_controles = document.createElement('div');
+        div_controles.classList.add('div_controles');
+
+        let btn_reset = document.createElement('button');
+        btn_reset.classList.add('btn-reset');
+        btn_reset.classList.add('button');
+        btn_reset.innerText = "Reset";
+        btn_reset.addEventListener("click", ()=>{
+            moveFoco(0,0);
+        }); 
+        div_controles.appendChild(btn_reset);
+
+        let btn_up = document.createElement('button');
+        btn_up.classList.add('btn-up');
+        btn_up.classList.add('button');
+        btn_up.innerText = "↑";
+        btn_up.addEventListener("click", ()=>{
+            moveFoco(0,50);
+        }); 
+        div_controles.appendChild(btn_up);
+
+        let btn_right = document.createElement('button');
+        btn_right.classList.add('btn-right');
+        btn_right.classList.add('button');
+        btn_right.innerText = "→";
+        btn_right.addEventListener("click", ()=>{
+            moveFoco(50,0);
+        }); 
+        div_controles.appendChild(btn_right);
+
+        let btn_down = document.createElement('button');
+        btn_down.classList.add('btn-down');
+        btn_down.classList.add('button');
+        btn_down.innerText = "↓";
+        btn_down.addEventListener("click", ()=>{
+            moveFoco(0,-50);
+        }); 
+        div_controles.appendChild(btn_down);
+
+        let btn_left = document.createElement('button');
+        btn_left.classList.add('btn-left');
+        btn_left.classList.add('button');
+        btn_left.innerText = "←";
+        btn_left.addEventListener("click", ()=>{
+            moveFoco(-50,0);
+        }); 
+        div_controles.appendChild(btn_left);
+        
+        div_comandos.appendChild(div_controles);
     }
 
     function moveFoco(x,y){
@@ -199,4 +251,9 @@ function mapDown(event){
 function mapDblclick(event){
     //event.preventDefault();
     //event.stopPropagation();
+}
+
+function contextMenu(event){
+    event.preventDefault();
+    event.stopPropagation();
 }
